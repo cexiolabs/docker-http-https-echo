@@ -55,9 +55,15 @@ app.all('*', (req, res) => {
   console.log(echo);
 });
 
+const SSL_KEY_FILE = process.env.SSL_KEY_FILE || "/app/privkey.pem";
+const SSL_CERT_FILE = process.env.SSL_CERT_FILE || "/app/fullchain.pem";
+
+console.log(`Use SSL_KEY_FILE as ${SSL_KEY_FILE}`);
+console.log(`Use SSL_CERT_FILE as ${SSL_CERT_FILE}`);
+
 const sslOpts = {
-  key: require('fs').readFileSync('privkey.pem'),
-  cert: require('fs').readFileSync('fullchain.pem'),
+  key: require('fs').readFileSync(SSL_KEY_FILE),
+  cert: require('fs').readFileSync(SSL_CERT_FILE),
 };
 
 var httpServer = http.createServer(app).listen(process.env.HTTP_PORT || 80);

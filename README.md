@@ -4,12 +4,13 @@ Docker image which echoes various HTTP request properties back to client, as wel
 
 ## Usage
 
-    docker run -p 8080:80 -p 8443:443 --rm -t mendhak/http-https-echo
+    docker run --publish 8080:80 --publish 8443:443 --rm --tty cexiolabs/http-https-echo
+
+    docker run --publish 8080:8888 --publish 8443:9999 --volume /my/ssl/path:/etc/ssl --env HTTP_PORT=8888 HTTPS_PORT=9999 --env --env SSL_CERT_FILE=/etc/ssl/mycert.pem --env SSL_KEY_FILE=/etc/ssl/mycert.key --rm --tty cexiolabs/http-https-echo
 
 Then issue a request via your browser or curl -
 
     curl -k -X PUT -H "Arbitrary:Header" -d aaa=bbb https://localhost:8443/hello-world
-
 
 
 ## Docker Compose
@@ -17,51 +18,32 @@ Then issue a request via your browser or curl -
 You can substitute the certificate and private key with your own. This example uses the snakeoil cert.
 
     my-http-listener:
-        image: mendhak/http-https-echo
-        ports:
-            - "8080:80"
-            - "8443:443"
-        volumes:
-            - /etc/ssl/certs/ssl-cert-snakeoil.pem:/app/fullchain.pem
-            - /etc/ssl/private/ssl-cert-snakeoil.key:/app/privkey.pem
-
-
-## Choose your ports
-
-You can choose a different internal port instead of 80 and 443 with the `HTTP_PORT` and `HTTPS_PORT` environment variables. 
-
-In this example I'm setting http to listen on 8888, and https to listen on 9999.  
-
-     docker run -e HTTP_PORT=8888 -e HTTPS_PORT=9999 -p 8080:8888 -p 8443:9999 --rm -t mendhak/http-https-echo
-
-
-With docker compose, this would be
-
-    my-http-listener:
-        image: mendhak/http-https-echo
-        environment: 
-            - HTTP_PORT=8888
-            - HTTPS_PORT=9999
+        image: cexiolabs/http-https-echo
         ports:
             - "8080:8888"
             - "8443:9999"
-
-
+        environment:
+            - SSL_CERT_FILE=/etc/ssl/mycert.pem
+            - SSL_KEY_FILE=/etc/ssl/mycert.key
+            - HTTP_PORT=8888
+            - HTTPS_PORT=9999
+        volumes:
+            - /my/ssl/path:/etc/ssl
 
 ## Output
 
 #### Curl output
 
-![curl](https://raw.githubusercontent.com/mendhak/docker-http-https-echo/master/screenshots/screenshot2.png)
+![curl](https://raw.githubusercontent.com/cexiolabs/docker-http-https-echo/master/screenshots/screenshot2.png)
 
 #### `docker logs` output
 
-![dockerlogs](https://raw.githubusercontent.com/mendhak/docker-http-https-echo/master/screenshots/screenshot3.png)
+![dockerlogs](https://raw.githubusercontent.com/cexiolabs/docker-http-https-echo/master/screenshots/screenshot3.png)
 
 
 
 ## Building
 
-    docker build -t mendhak/http-https-echo .
+    docker build --tag cexiolabs/http-https-echo .
 
 

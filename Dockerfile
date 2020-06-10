@@ -4,7 +4,7 @@ WORKDIR /app
 
 COPY . .
 
-ENV HTTP_PORT=80 HTTPS_PORT=443
+ENV HTTP_PORT=80 HTTPS_PORT=443 SSL_CERT_FILE=/app/fullchain.pem SSL_KEY_FILE=/app/privkey.pem
 
 RUN npm install --production
 
